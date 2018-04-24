@@ -15,9 +15,7 @@ public class Test001 {
 
 
 
-		//test.createNewTableOfAP();
-		//test.insertIntoApTable("pen note_book");
-		test.selectAllFromApTable();
+		test.createNewTableOfAP();
 
 	}
 

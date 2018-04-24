@@ -139,7 +139,8 @@ public class DatabaseTest {
             // loop through the result set
             while (rs.next()) {
                 System.out.println(rs.getInt("id") +  "\t" +
-                                   rs.getString("name"));
+                                   rs.getString("name") + "\t" +
+                                   rs.getDouble("points"));
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());

@@ -128,24 +128,6 @@ public class DatabaseTest {
         }
     }
 
-
-    public void selectAllFromApTable(){
-        String sql = "SELECT id, name FROM " + apTable+ "";
-
-        try (Connection conn = this.connect();
-             Statement stmt  = conn.createStatement();
-             ResultSet rs    = stmt.executeQuery(sql)){
-
-            // loop through the result set
-            while (rs.next()) {
-                System.out.println(rs.getInt("id") +  "\t" +
-                                   rs.getString("name"));
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
     public void getpointsGreaterThan(double points){
         String sql = "SELECT id, name, points "
                    + "FROM " + tableName+ " WHERE points > ?";

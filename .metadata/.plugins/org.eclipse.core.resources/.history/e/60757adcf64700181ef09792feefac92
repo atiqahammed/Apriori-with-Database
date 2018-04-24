@@ -158,13 +158,15 @@ public class DatabaseTest {
             // loop through the result set
             while (rs.next()) {
                 //System.out.println(rs.getInt("id") +  "\t" + rs.getString("name"));
-            	allTransaction.add(rs.getString("name"));
+            	allTransaction.add(rs.getString("name"))
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
 
         return allTransaction;
+
+        reru
     }
 
     public void getpointsGreaterThan(double points){

@@ -15,18 +15,31 @@ public class Test001 {
 		//test.insert("Atiq", 0.0);
 		//test.selectAll();
 
+		//1 = bottle
+		//2 = pen
+		//3 = mouse
+		//4 = note_book
+		//5 = phone
+
 
 
 		//test.createNewTableOfAP();
 		//test.insertIntoApTable("pen note_book");
+		//test.insertIntoApTable("bottle pen phone");
+
+		//test.insertIntoApTable("bottle pen mouse phone");
+
+		//test.insertIntoApTable("bottle pen note_book");
+
+		//test.insertIntoApTable("bottle mouse");
+
+
 		//test.selectAllFromApTable();
 		ArrayList<String> all = test.getAllFromApTable();
 
 		for(int i = 0; i < all.size(); i++) {
 			System.out.println(all.get(i));
 		}
-
-
 	}
 
 }

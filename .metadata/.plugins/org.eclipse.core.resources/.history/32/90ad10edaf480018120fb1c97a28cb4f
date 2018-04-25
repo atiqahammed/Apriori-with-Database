@@ -1,0 +1,200 @@
+package main;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+
+import database_sqlite.DatabaseTest;
+
+public class Process {
+
+	ArrayList<ArrayList<String>> transactions = new ArrayList<>();
+	ArrayList<String> uniqueProduct = new ArrayList<>();
+	ArrayList<ProductSet> setofProductList = new ArrayList<>();
+	ArrayList<ProductSet> allProductSetWithMinSup = new ArrayList<>();
+	int depth = 1;
+
+
+
+
+
+	public void proceed() {
+
+		inputTransactions();
+		findUniqueProduct();
+		makeSetOfProductList();
+		operate(setofProductList, transactions);
+
+
+
+		System.out.println("hello world ?????????");
+	}
+
+
+
+
+
+	private void operate(ArrayList<ProductSet> setofProductList, ArrayList<ArrayList<String>> transactions) {
+		ArrayList<ProductSet> selectedSetOfProductList = new ArrayList<>();
+		selectProductList(selectedSetOfProductList, setofProductList, transactions);
+		printTable("C", setofProductList);
+		System.out.println();
+		if(selectedSetOfProductList.size() < 1) return;
+		printTable("L", selectedSetOfProductList);
+		System.out.println();
+
+		ArrayList<ProductSet> newSetofProductList = new ArrayList<>();
+
+
+
+
+	}
+
+
+
+
+
+	private void printTable(String tableType, ArrayList<ProductSet> temp) {
+		//cout << "Table " << tableType << depth << endl;
+		System.out.println("Table " + tableType +""+ depth);
+
+		for(int i = 0; i < temp.size(); i++) {
+			for(int j = 0; j < temp.get(i).productList.size(); j++) {
+				System.out.print(temp.get(i).productList.get(j)+" ");
+				//cout << setOfProductList[i].productList[j] << " ";
+			}
+			System.out.println("  --  "+temp.get(i).count);
+			//cout << "  --  " << setOfProductList[i].count << endl;
+		}
+
+	}
+
+
+
+
+
+	private void selectProductList(ArrayList<ProductSet> selectedSetOfProductList, ArrayList<ProductSet> setofProductList, ArrayList<ArrayList<String>> transactions) {
+		for(int i = 0; i < setofProductList.size(); i++) {
+			int occurance = testOccurance(setofProductList.get(i));
+			setofProductList.get(i).count = occurance;
+			if(setofProductList.get(i).count >= 2) {
+				allProductSetWithMinSup.add(setofProductList.get(i));
+				selectedSetOfProductList.add(setofProductList.get(i));
+			}
+		}
+
+	}
+
+
+
+
+
+	private int testOccurance(ProductSet currentProductList) {
+		int count = 0;
+		for(int i = 0; i < transactions.size(); i++)
+			if(isOccuerIn(transactions.get(i), currentProductList))
+				count++;
+		return count;
+	}
+
+
+
+
+
+	private boolean isOccuerIn(ArrayList<String> currentTransaction, ProductSet currentProductList) {
+		int count = 0;
+		for(int i = 0; i < currentProductList.productList.size(); i++) {
+			for(int j = 0; j < currentTransaction.size(); j++) {
+				if(currentProductList.productList.get(i).equals( currentTransaction.get(j))) {
+					count++;
+					break;
+				}
+			}
+		}
+
+		if(count >= currentProductList.productList.size())
+			return true;
+		return false;
+	}
+
+
+
+
+
+	private void makeSetOfProductList() {
+		for(int i = 0; i < uniqueProduct.size(); i++) {
+			ProductSet newSetofProductList = new ProductSet();
+			newSetofProductList.productList.add(uniqueProduct.get(i));
+			setofProductList.add(newSetofProductList);
+		}
+	}
+
+
+
+
+
+	private void findUniqueProduct() {
+		for(int i = 0; i < transactions.size(); i++) {
+			for(int j = 0; j < transactions.get(i).size(); j++) {
+				if(!uniqueProduct.contains(transactions.get(i).get(j)))
+					uniqueProduct.add(transactions.get(i).get(j));
+			}
+		}
+
+		//for(int i = 0; i < uniqueProduct.size(); i++)
+		//	System.out.println(uniqueProduct.get(i));
+
+	}
+
+
+
+
+
+	private void inputTransactions() {
+		DatabaseTest test = new DatabaseTest();
+		ArrayList<String> all = test.getAllFromApTable();
+
+		for(int i = 0; i < all.size(); i++) {
+			transactions.add(stringToTransaction(all.get(i)));
+			//System.out.println(all.get(i));
+		}
+
+		/*
+
+		for(int i = 0; i < transactions.size(); i++) {
+			for(int j = 0; j < transactions.get(i).size(); j++) {
+				System.out.print(transactions.get(i).get(j) +" ");
+			}
+			System.out.println();
+		}*/
+
+	}
+
+
+
+
+
+	private ArrayList<String> stringToTransaction(String string) {
+		ArrayList<String> allProductsofATransAction = new ArrayList<>();
+
+		String[] temp = string.split(" ");
+		for(int i = 0; i < temp.length; i++)
+			allProductsofATransAction.add(temp[i]);
+
+
+		return allProductsofATransAction;
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}

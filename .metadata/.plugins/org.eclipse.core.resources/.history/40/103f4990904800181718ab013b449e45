@@ -1,0 +1,44 @@
+package main;
+
+import java.util.ArrayList;
+
+import database_sqlite.DatabaseTest;
+
+public class Test001 {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		DatabaseTest test = new DatabaseTest();
+		//test.createNewDatabase();
+
+		//test.createNewTable();
+		//test.insert("Atiq", 0.0);
+		//test.selectAll();
+
+		//1 = bottle
+		//2 = pen
+		//3 = mouse
+		//4 = note_book
+		//5 = phone
+
+
+
+		//test.createNewTableOfAP();
+		//test.insertIntoApTable("pen note_book");
+		//test.insertIntoApTable("bottle pen phone");
+
+		test.insertIntoApTable("pen mouse");
+
+
+
+		//test.selectAllFromApTable();
+		ArrayList<String> all = test.getAllFromApTable();
+
+		for(int i = 0; i < all.size(); i++) {
+			System.out.println(all.get(i));
+		}
+
+
+	}
+
+}

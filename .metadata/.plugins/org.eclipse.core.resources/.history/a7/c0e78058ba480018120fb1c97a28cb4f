@@ -1,0 +1,354 @@
+package main;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Scanner;
+
+import database_sqlite.DatabaseTest;
+
+public class Process {
+
+	ArrayList<ArrayList<String>> transactions = new ArrayList<>();
+	ArrayList<String> uniqueProduct = new ArrayList<>();
+	ArrayList<ProductSet> setofProductList = new ArrayList<>();
+	ArrayList<ProductSet> allProductSetWithMinSup = new ArrayList<>();
+	int depth = 1;
+	Scanner sc=new Scanner(System.in);
+
+
+
+
+
+	public void proceed() {
+
+		inputTransactions();
+		findUniqueProduct();
+		makeSetOfProductList();
+		operate(setofProductList, transactions);
+
+		int maximumProductList = allProductSetWithMinSup.get(allProductSetWithMinSup.size() - 1).productList.size();
+
+		for(int i = allProductSetWithMinSup.size() - 1; i > 0; i--) {
+			if(allProductSetWithMinSup.get(i).productList.size() ==  1)
+				break;
+			printConfidence(allProductSetWithMinSup.get(i));
+		}
+
+		System.out.print("Please enter new products: ");
+		String products = sc.nextLine();
+		new DatabaseTest().insertIntoApTable(products);
+
+
+
+
+		System.out.println("hello world ?????????");
+	}
+
+
+
+
+
+	private void printConfidence(ProductSet testList) {
+		//cout << endl;
+
+		System.out.println();
+		for(int i = 0; i < allProductSetWithMinSup.size(); i++) {
+			if(allProductSetWithMinSup.get(i).productList.size() < testList.productList.size()) {
+
+				if(subsetOf(allProductSetWithMinSup.get(i), testList)) {
+
+					for(int k = 0; k <allProductSetWithMinSup.get(i).productList.size(); k++) {
+
+
+						System.out.print(allProductSetWithMinSup.get(i).productList.get(k)+" " );
+						//cout << allProductSetWithMinSup[i].productList[k] << " ";
+					}
+					//cout << endl;
+					System.out.println();
+
+					for(int k = 0; k < testList.productList.size(); k++) {
+						System.out.print(testList.productList.get(k)+" ");
+						//cout << testList.productList[k] << " ";
+					}
+
+
+					System.out.println("       confidence  =  " + testList.count +"/"+ allProductSetWithMinSup.get(i).count +"  =  "+ ((double)testList.count/allProductSetWithMinSup.get(i).count)*100 +"%");
+					//cout << "       confidence  =  " << testList.count << "/" << allProductSetWithMinSup[i].count << "  =  " << ((double)testList.count/allProductSetWithMinSup[i].count)*100 << "%" << endl;
+					System.out.println();
+					//cout << endl;
+
+
+				}
+			}
+		}
+
+	}
+
+
+
+
+
+	private boolean subsetOf(ProductSet subset, ProductSet testList) {
+		int count = 0;
+		for(int i = 0; i < subset.productList.size(); i++)
+			for(int j = 0; j < testList.productList.size(); j++)
+				if(subset.productList.get(i).equals( testList.productList.get(j))) {
+					count++;
+					break;
+				}
+		if(count ==  subset.productList.size()) return true;
+		return false;
+	}
+
+
+
+
+
+	private void operate(ArrayList<ProductSet> setofProductList, ArrayList<ArrayList<String>> transactions) {
+		ArrayList<ProductSet> selectedSetOfProductList = new ArrayList<>();
+		selectProductList(selectedSetOfProductList, setofProductList, transactions);
+		printTable("C", setofProductList);
+		System.out.println();
+		if(selectedSetOfProductList.size() < 1) return;
+		printTable("L", selectedSetOfProductList);
+		System.out.println();
+
+		ArrayList<ProductSet> newSetofProductList = new ArrayList<>();
+
+		if(selectedSetOfProductList.get(0).productList.size() == 1) {
+			for(int i = 0; i < selectedSetOfProductList.size() - 1; i++) {
+				for(int j = i + 1; j < selectedSetOfProductList.size(); j++) {
+					ProductSet newSet = new ProductSet();
+					newSet.productList.add(selectedSetOfProductList.get(i).productList.get(0));
+					newSet.productList.add(selectedSetOfProductList.get(j).productList.get(0));
+					newSetofProductList.add(newSet);
+				}
+			}
+
+		} else
+			for(int i = 0; i < selectedSetOfProductList.size() - 1; i++)
+				for(int j = i + 1; j < selectedSetOfProductList.size(); j++)
+					if(selectedSetOfProductList.get(i).productList.get(0).equals( selectedSetOfProductList.get(j).productList.get(0))) {
+
+						ProductSet tempCombination = getNewCombination(selectedSetOfProductList.get(i), selectedSetOfProductList.get(j));
+						if(suffexExist(selectedSetOfProductList, tempCombination))
+							newSetofProductList.add( tempCombination);
+					}
+
+
+		depth++;
+		operate(newSetofProductList, transactions);
+
+
+
+
+	}
+
+
+
+
+
+	private boolean suffexExist(ArrayList<ProductSet> selectedSetOfProductList, ProductSet tempCombination) {
+		for(int i = 0; i < selectedSetOfProductList.size(); i++) {
+			int count = 0;
+			for(int j = 0; j < selectedSetOfProductList.get(i).productList.size(); j++) {
+				for(int k = 1; k < tempCombination.productList.size(); k++) {
+					if(tempCombination.productList.get(k).equals( selectedSetOfProductList.get(i).productList.get(j)))
+						count++;
+				}
+			}
+
+			if(count == selectedSetOfProductList.get(i).productList.size()) {
+				//cout << count << endl;
+				return true;
+
+			}
+
+		}
+
+
+		return false;
+	}
+
+
+
+
+
+	private ProductSet getNewCombination(ProductSet set1, ProductSet set2) {
+		ProductSet newSet = new ProductSet();
+		//map<string, bool> taken;
+		for(int i = 0; i < set1.productList.size(); i++) {
+			if(!newSet.productList.contains(set1.productList.get(i))) {
+				newSet.productList.add(set1.productList.get(i));
+			}
+
+			/*
+			if(!taken[set1.productList[i]]) {
+				newSet.productList.push_back(set1.productList[i]);
+				taken[set1.productList[i]] = true;
+			}*/
+		}
+
+		for(int i = 0; i < set2.productList.size(); i++) {
+			if(!newSet.productList.contains(set2.productList.get(i))) {
+				newSet.productList.add(set2.productList.get(i));
+			}
+
+			/*if(!taken[set2.productList[i]]) {
+				newSet.productList.push_back(set2.productList[i]);
+				taken[set2.productList[i]] = true;
+			}/**/
+		}
+
+		return newSet;
+	}
+
+
+
+
+
+	private void printTable(String tableType, ArrayList<ProductSet> temp) {
+		//cout << "Table " << tableType << depth << endl;
+		System.out.println("Table " + tableType +""+ depth);
+
+		for(int i = 0; i < temp.size(); i++) {
+			for(int j = 0; j < temp.get(i).productList.size(); j++) {
+				System.out.print(temp.get(i).productList.get(j)+" ");
+				//cout << setOfProductList[i].productList[j] << " ";
+			}
+			System.out.println("  --  "+temp.get(i).count);
+			//cout << "  --  " << setOfProductList[i].count << endl;
+		}
+
+	}
+
+
+
+
+
+	private void selectProductList(ArrayList<ProductSet> selectedSetOfProductList, ArrayList<ProductSet> setofProductList, ArrayList<ArrayList<String>> transactions) {
+		for(int i = 0; i < setofProductList.size(); i++) {
+			int occurance = testOccurance(setofProductList.get(i));
+			setofProductList.get(i).count = occurance;
+			if(setofProductList.get(i).count >= 2) {
+				allProductSetWithMinSup.add(setofProductList.get(i));
+				selectedSetOfProductList.add(setofProductList.get(i));
+			}
+		}
+
+	}
+
+
+
+
+
+	private int testOccurance(ProductSet currentProductList) {
+		int count = 0;
+		for(int i = 0; i < transactions.size(); i++)
+			if(isOccuerIn(transactions.get(i), currentProductList))
+				count++;
+		return count;
+	}
+
+
+
+
+
+	private boolean isOccuerIn(ArrayList<String> currentTransaction, ProductSet currentProductList) {
+		int count = 0;
+		for(int i = 0; i < currentProductList.productList.size(); i++) {
+			for(int j = 0; j < currentTransaction.size(); j++) {
+				if(currentProductList.productList.get(i).equals( currentTransaction.get(j))) {
+					count++;
+					break;
+				}
+			}
+		}
+
+		if(count >= currentProductList.productList.size())
+			return true;
+		return false;
+	}
+
+
+
+
+
+	private void makeSetOfProductList() {
+		for(int i = 0; i < uniqueProduct.size(); i++) {
+			ProductSet newSetofProductList = new ProductSet();
+			newSetofProductList.productList.add(uniqueProduct.get(i));
+			setofProductList.add(newSetofProductList);
+		}
+	}
+
+
+
+
+
+	private void findUniqueProduct() {
+		for(int i = 0; i < transactions.size(); i++) {
+			for(int j = 0; j < transactions.get(i).size(); j++) {
+				if(!uniqueProduct.contains(transactions.get(i).get(j)))
+					uniqueProduct.add(transactions.get(i).get(j));
+			}
+		}
+
+		//for(int i = 0; i < uniqueProduct.size(); i++)
+		//	System.out.println(uniqueProduct.get(i));
+
+	}
+
+
+
+
+
+	private void inputTransactions() {
+		DatabaseTest test = new DatabaseTest();
+		ArrayList<String> all = test.getAllFromApTable();
+
+		for(int i = 0; i < all.size(); i++) {
+			transactions.add(stringToTransaction(all.get(i)));
+			//System.out.println(all.get(i));
+		}
+
+		/*
+
+		for(int i = 0; i < transactions.size(); i++) {
+			for(int j = 0; j < transactions.get(i).size(); j++) {
+				System.out.print(transactions.get(i).get(j) +" ");
+			}
+			System.out.println();
+		}*/
+
+	}
+
+
+
+
+
+	private ArrayList<String> stringToTransaction(String string) {
+		ArrayList<String> allProductsofATransAction = new ArrayList<>();
+
+		String[] temp = string.split(" ");
+		for(int i = 0; i < temp.length; i++)
+			allProductsofATransAction.add(temp[i]);
+
+
+		return allProductsofATransAction;
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}

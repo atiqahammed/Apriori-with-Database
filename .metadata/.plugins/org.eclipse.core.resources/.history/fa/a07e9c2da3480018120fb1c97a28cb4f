@@ -1,0 +1,98 @@
+package main;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+
+import database_sqlite.DatabaseTest;
+
+public class Process {
+
+	ArrayList<ArrayList<String>> transactions = new ArrayList<>();
+	ArrayList<String> uniqueProduct = new ArrayList<>();
+	ArrayList<ProductSet> setofProductList = new ArrayList<>();
+
+
+
+
+
+	public void proceed() {
+
+		inputTransactions();
+
+		findUniqueProduct();
+
+
+
+		System.out.println("hello world ?????????");
+	}
+
+
+
+
+
+	private void findUniqueProduct() {
+		for(int i = 0; i < transactions.size(); i++) {
+			for(int j = 0; j < transactions.get(i).size(); j++) {
+				if(!uniqueProduct.contains(transactions.get(i).get(j)))
+					uniqueProduct.add(transactions.get(i).get(j));
+			}
+		}
+
+		//for(int i = 0; i < uniqueProduct.size(); i++)
+		//	System.out.println(uniqueProduct.get(i));
+
+	}
+
+
+
+
+
+	private void inputTransactions() {
+		DatabaseTest test = new DatabaseTest();
+		ArrayList<String> all = test.getAllFromApTable();
+
+		for(int i = 0; i < all.size(); i++) {
+			transactions.add(stringToTransaction(all.get(i)));
+			//System.out.println(all.get(i));
+		}
+
+		/*
+
+		for(int i = 0; i < transactions.size(); i++) {
+			for(int j = 0; j < transactions.get(i).size(); j++) {
+				System.out.print(transactions.get(i).get(j) +" ");
+			}
+			System.out.println();
+		}*/
+
+	}
+
+
+
+
+
+	private ArrayList<String> stringToTransaction(String string) {
+		ArrayList<String> allProductsofATransAction = new ArrayList<>();
+
+		String[] temp = string.split(" ");
+		for(int i = 0; i < temp.length; i++)
+			allProductsofATransAction.add(temp[i]);
+
+
+		return allProductsofATransAction;
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}

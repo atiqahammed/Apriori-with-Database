@@ -152,7 +152,7 @@ bool suffexExist(vector<productSet> selectedSetOfProductList, productSet tempCom
 
 void operate(vector<productSet> setOfProductList, vector<transaction> transactions) {
 	vector<productSet> selectedSetOfProductList;
-	selectProductList(setOfProductList, transactions, selectedSetOfProductList);
+	selectProductList(setOfProductList, transactions, selectedSetOfProductList); 
 	printTable("C", setOfProductList);
 	cout << endl;
 	if(selectedSetOfProductList.size() < 1) return;
